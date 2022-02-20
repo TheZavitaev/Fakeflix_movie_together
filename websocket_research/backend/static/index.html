@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Chat</title>
+        <title>Video&Chat</title>
     </head>
     <body>
-        <h1>WebSocket Chat</h1>
-        <h2>Your ID: <span id="ws-id"></span></h2>
-        <form id="messageForm" action="">
-            <input type="text" id="messageText" autocomplete="off"/>
-            <button>Send</button>
-        </form>
-        <ul id='messages'></ul>
-        <script src="script.js"></script>
+    <h1>Websocket Video</h1>
+    <video id="video" width="400" height="300" controls="controls">
+        <source src="video.mp4" type="video/mp4;">
+    </video>
+
+    <h1>WebSocket Chat</h1>
+    <h2>Your ID: <span id="ws-id"></span></h2>
+    <form id="messageForm" action="">
+        <input type="text" id="messageText" autocomplete="off"/>
+        <button>Send</button>
+    </form>
+    <ul id='messages'></ul>
+    <script src="script.js"></script>
     </body>
 </html>

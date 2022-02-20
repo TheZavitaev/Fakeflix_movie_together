@@ -1,5 +1,3 @@
-from typing import List
-
 import uvicorn
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
