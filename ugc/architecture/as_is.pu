@@ -1,0 +1,25 @@
+@startuml
+
+skinparam componentStyle uml2
+actor User
+database PostgresMovieDB
+database PostgresAuthDB
+database ElasticSearchFulltextSearch
+component DjangoAdminPanel
+component LoadBalancer
+component FastMovieAPI
+component FlaskAuthAPI
+component ETLPostgresToES
+
+User -right-> LoadBalancer: Запрос на просмотр контента
+LoadBalancer -right-> FastMovieAPI: Запрос данных о фильме
+FastMovieAPI -right-> FlaskAuthAPI: Запрос на аутентификацию/авторизацию пользователя
+FastMovieAPI -down-> ElasticSearchFulltextSearch
+FlaskAuthAPI -right-> PostgresAuthDB
+PostgresMovieDB -up-> ETLPostgresToES
+ETLPostgresToES -down-> PostgresMovieDB
+ETLPostgresToES -up-> ElasticSearchFulltextSearch
+ContentManager -left-> DjangoAdminPanel: Добавление и редактирование данных о фильмах
+DjangoAdminPanel -left-> PostgresMovieDB
+
+@enduml
