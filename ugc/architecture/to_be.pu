@@ -1,0 +1,38 @@
+@startuml
+skinparam componentStyle uml2
+actor User
+database PostgresMovieDB
+database PostgresAuthDB
+database ElasticSearchFulltextSearch
+component DjangoAdminPanel
+component Gateway
+component MovieAPI
+component AuthAPI
+component ETLPostgresToES
+
+User -right-> Gateway: Запрос на просмотр контента
+Gateway -right-> AuthAPI: Запрос на аутентификацию/авторизацию пользователя
+
+Gateway -down-> MovieAPI: Запрос данных о фильме
+
+
+MovieAPI -down-> ElasticSearchFulltextSearch
+AuthAPI -right-> PostgresAuthDB
+PostgresMovieDB -up-> ETLPostgresToES
+ETLPostgresToES -down-> PostgresMovieDB
+ETLPostgresToES -up-> ElasticSearchFulltextSearch
+ContentManager -left-> DjangoAdminPanel: Редактирование контента
+DjangoAdminPanel -left-> PostgresMovieDB
+
+actor DataAnalyst
+component UGCAPI
+component ETLKafkaToClickHouse
+database Kafka
+database ClickHouse
+
+Gateway -down-> UGCAPI: Запись прогресса просмотра
+UGCAPI -down-> Kafka
+Kafka -down-> ETLKafkaToClickHouse
+ETLKafkaToClickHouse-down-> ClickHouse: Перегрузка данных
+DataAnalyst -right-> ClickHouse
+@enduml

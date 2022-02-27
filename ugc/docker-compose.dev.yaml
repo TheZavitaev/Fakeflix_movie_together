@@ -1,0 +1,115 @@
+version: '2'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./compose/api/dev/Dockerfile
+    image: ugc_local_api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - kafka
+    volumes:
+      - ./api/src:/app/src
+    command: /start
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "22181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  clickhouse-node1:
+    image: yandex/clickhouse-server:20.4
+#    image: kolsys/clickhouse-server:21.3.15.4-lts-arm  # for Apple silicone
+    container_name: clickhouse-node1
+    hostname: clickhouse-node1
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - ./data/node1:/etc/clickhouse-server
+    depends_on:
+      - zookeeper
+
+  clickhouse-node2:
+    image: yandex/clickhouse-server:20.4
+#    image: kolsys/clickhouse-server:21.3.15.4-lts-arm  # for Apple silicone
+    container_name: clickhouse-node2
+    hostname: clickhouse-node2
+    volumes:
+      - ./data/node2:/etc/clickhouse-server
+    depends_on:
+      - zookeeper
+
+  clickhouse-node3:
+    image: yandex/clickhouse-server:20.4
+#    image: kolsys/clickhouse-server:21.3.15.4-lts-arm  # for Apple silicone
+    container_name: clickhouse-node3
+    hostname: clickhouse-node3
+    volumes:
+      - ./data/node3:/etc/clickhouse-server
+    depends_on:
+      - zookeeper
+
+  clickhouse-node4:
+    image: yandex/clickhouse-server:20.4
+#    image: kolsys/clickhouse-server:21.3.15.4-lts-arm  # for Apple silicone
+    container_name: clickhouse-node4
+    hostname: clickhouse-node4
+    volumes:
+      - ./data/node4:/etc/clickhouse-server
+    depends_on:
+      - zookeeper
+
+  etl:
+    build:
+      context: .
+      dockerfile: compose/etl/production/Dockerfile
+    container_name: kafka2clickhouse
+    depends_on:
+      - api
+      - kafka
+    command: bash -c "cd src && python3 main.py"
+    restart: always
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pass123
+    volumes:
+      - mongo_db:/data/db
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:pass123@mongo:27017/
+    depends_on:
+      - mongo
+
+volumes:
+  mongo_db:

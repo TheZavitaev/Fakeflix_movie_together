@@ -1,0 +1,12 @@
+fastapi
+pydantic
+aiokafka
+orjson
+python-jose[cryptography]
+uvicorn
+gunicorn
+sentry-sdk
+python-logstash-async
+backoff
+pymongo[srv]
+motor
