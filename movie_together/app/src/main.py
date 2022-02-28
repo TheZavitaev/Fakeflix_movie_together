@@ -13,7 +13,7 @@ from movie_together.app.src.core.logger import LOGGING
 from movie_together.app.src.db import postgres
 
 logging_config.dictConfig(LOGGING)
-api_key = APIKeyHeader(name='authorization', auto_error=False)
+# api_key = APIKeyHeader(name='authorization', auto_error=False)
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -24,12 +24,16 @@ app = FastAPI(
 
 
 # Include API router
-app.include_router(api_router, prefix='/api', dependencies=[Security(api_key)])
+app.include_router(
+    api_router,
+    prefix='/api',
+    # dependencies=[Security(api_key)],
+)
 
 
-@app.on_event('startup')
-async def startup():
-    postgres.async_pg_engine = create_async_engine(settings.pg_dsn, echo=True)
+# @app.on_event('startup')
+# async def startup():
+#     postgres.async_pg_engine = create_async_engine(settings.pg_dsn, echo=True)
 
 
 @app.on_event('shutdown')
@@ -39,7 +43,7 @@ async def shutdown():
 
 if __name__ == '__main__':
     uvicorn.run(
-        'app.main:app',
+        'main:app',
         host=settings.PROJECT_HOST,
         port=settings.PROJECT_PORT,
         log_config=LOGGING,

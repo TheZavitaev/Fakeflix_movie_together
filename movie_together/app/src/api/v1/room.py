@@ -12,16 +12,16 @@ from services.queue_producer import KafkaProducer, get_kafka_producer
 room_router = APIRouter()
 
 
-@room_router.post('/', response_model=ResponseModel)
-@login_required()
-async def create_room(
-        request: Request,
-        service: RoomService = Depends(get_room_service),
-) -> ResponseModel:
-    error = await service.create_user_room(user_id=request.user.pk)
-    if error:
-        return ResponseModel(success=False, errors=[error])
-    return ResponseModel(success=True)
+# @room_router.post('/', response_model=ResponseModel)
+# @login_required()
+# async def create_room(
+#         request: Request,
+#         service: RoomService = Depends(get_room_service),
+# ) -> ResponseModel:
+#     error = await service.create_user_room(user_id=request.user.pk)
+#     if error:
+#         return ResponseModel(success=False, errors=[error])
+#     return ResponseModel(success=True)
 
 
 async def send_to_websocket(messages: list, websocket: WebSocket):
@@ -30,7 +30,7 @@ async def send_to_websocket(messages: list, websocket: WebSocket):
 
 
 @room_router.websocket('/{session_num}')
-@login_required()
+# @login_required()
 async def websocket_endpoint(
         websocket: WebSocket,
         session_num: int,
