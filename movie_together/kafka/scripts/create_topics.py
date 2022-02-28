@@ -13,7 +13,7 @@ class Kafka:
 
         self.admin_client = KafkaAdminClient(bootstrap_servers=servers_name, client_id=client_id)
 
-    def create_topic(self, topic_name=None, num_partitions=1, replication_factor=1):
+    def create_topic(self, topic_name=None, num_partitions=10, replication_factor=1):
         try:
             self.admin_client.create_topics(
                 new_topics=[NewTopic(
