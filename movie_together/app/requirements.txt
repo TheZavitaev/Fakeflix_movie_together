@@ -1,6 +1,6 @@
-confluent-kafka==1.7.0
 fastapi==0.63.0
-"uvicorn[standard]"==0.13.4
+uvicorn[standard]==0.13.4
 aiofiles==0.8.0
 orjson==3.6.7
 sqlalchemy==1.4.31
+aiokafka==0.7.2

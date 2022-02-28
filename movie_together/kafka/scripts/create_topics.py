@@ -1,4 +1,5 @@
 import json
+import os
 
 from kafka.admin import KafkaAdminClient, NewTopic
 from kafka.errors import TopicAlreadyExistsError
@@ -8,7 +9,7 @@ class Kafka:
     def __init__(self, servers_name=None, client_id='default_user'):
 
         if servers_name is None:
-            servers_name = ['kafka:29092', ]
+            servers_name = [f'{os.getenv("KAFKA_HOST", "kafka")}:{os.getenv("KAFKA_PORT", "29092")}', ]
 
         self.admin_client = KafkaAdminClient(bootstrap_servers=servers_name, client_id=client_id)
 

@@ -1,3 +1,5 @@
+import os
+
 from pydantic import BaseSettings
 
 
@@ -14,7 +16,7 @@ class Settings(BaseSettings):
     DB_PASSWORD: str = 'postgres'
     DB_NAME: str = 'postgres'
 
-    KAFKA_HOST: str = 'kafka'
+    KAFKA_HOST: str = os.getenv('KAFKA_HOST', 'kafka')
     KAFKA_PORT: int = 29092
     KAFKA_AUTO_COMMIT: bool = False
     KAFKA_AUTO_OFFSET_RESET: str = 'earliest'

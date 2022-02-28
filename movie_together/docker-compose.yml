@@ -4,7 +4,7 @@ services:
     ports:
       - 22181:2181
     env_file:
-      - ./.env
+      - .env
     restart: unless-stopped
 
   kafka:
@@ -14,15 +14,15 @@ services:
     ports:
       - 29092:29092
     env_file:
-      - ./.env
+      - .env
     restart: unless-stopped
 
-  topics_init_python:
-    container_name: topics_init_python
-    depends_on:
-      - kafka
-    build:
-      context: ./kafka
-    volumes:
-      - ./kafka:/app/
-    restart: on-failure
+#  topics_init_python:
+#    container_name: topics_init_python
+#    depends_on:
+#      - kafka
+#    build:
+#      context: ./kafka
+#    volumes:
+#      - ./kafka:/app/
+#    restart: on-failure

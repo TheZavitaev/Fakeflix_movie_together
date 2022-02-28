@@ -1,3 +1,4 @@
+import os
 import time
 
 from kafka import KafkaAdminClient
@@ -5,7 +6,7 @@ from kafka.errors import NoBrokersAvailable, NodeNotReadyError
 
 
 def main():
-    servers_name = ['kafka:29092', ]
+    servers_name = [f'{os.getenv("KAFKA_HOST", "kafka")}:{os.getenv("KAFKA_PORT", "29092")}', ]
     print('Connecting to Kafka...')
     while True:
         try:
