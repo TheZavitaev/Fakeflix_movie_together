@@ -46,7 +46,6 @@ class KafkaConsumer:
     async def start(self):
         await self.consumer.start()
 
-    # TODO отдебажить msg, мб прикрутить сериализацию по нашей модели сообщения
     async def consume_loop(self, msg_process, *args, **kwargs):
         msg_bulk = []
         msg_count = 0
