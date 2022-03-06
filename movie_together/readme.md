@@ -3,7 +3,7 @@
 3) `pip install -r movie_together/app/requirements.txt`
 4) `alembic upgrade head`
 
-Если я где-то накосячил:
+Если я где-то накосячил (а я накосячил, при компоуз ап не создаю пока БД `movie_together`):
 
 1) создали БД
 ```sql
