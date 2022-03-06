@@ -1,4 +1,4 @@
-from datetime import datetime
+import time
 from typing import Optional
 
 import aiohttp
@@ -83,7 +83,7 @@ async def websocket_endpoint(
             "username": user["username"],
             "connect_id": connect_id,
             "data": user,
-            "datetime": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),  # TODO формат в const
+            "datetime": int(time.time()),
         }
     )
     consumer.assign([(settings.KAFKA_TOPIC, result.partition)])
@@ -97,7 +97,7 @@ async def websocket_endpoint(
             message["connect_id"] = connect_id
             message["username"] = user["username"]
             message["room_id"] = room_id
-            message["datetime"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S"),  # TODO формат в const
+            message["datetime"] = int(time.time()),
             await producer.produce_json(settings.KAFKA_TOPIC, room_id, message)
     except WebSocketDisconnect:
         await producer.produce_json(
@@ -108,7 +108,7 @@ async def websocket_endpoint(
                 "room_id": room_id,
                 "username": user["username"],
                 "connect_id": connect_id,
-                "datetime": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),  # TODO формат в const
+                "datetime": int(time.time()),
             }
         )
         task.cancel()
