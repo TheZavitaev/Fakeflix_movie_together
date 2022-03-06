@@ -26,7 +26,10 @@ class CustomAuthBackend(AuthenticationBackend):
 
         # Checks the validity of the JWT token, if token is invalid returns UnauthenticatedUser object
         try:
+            logger.info(f'{credentials=}, {settings.JWT_SECRET_KEY=}, {settings.JWT_ALG=}')
             jwt_decoded = jwt.decode(credentials, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALG])
+
+            logger.info(f'{jwt_decoded=}')
         except jwt.DecodeError:
             return AuthCredentials(), UnauthenticatedUser()
 

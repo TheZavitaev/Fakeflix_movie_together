@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     KAFKA_AUTO_OFFSET_RESET: str = 'earliest'
     KAFKA_TOPIC: str = 'watch_together'
 
+    JWT_SECRET_KEY: str = 'secret'
+    JWT_ALG: str = 'HS256'
+
     @property
     def pg_dsn(self):
         return f'postgresql+asyncpg://' \

@@ -49,3 +49,19 @@ create table movie_together_room_user
 alter table movie_together_room_user
     owner to postgres;
 ```
+
+payload
+```json
+{
+    "username": "TheZavitaev",
+    "first_name": "Oleg",
+    "last_name": "Zavitaev",
+    "email": "o.zavitaev@yandex.ru",
+    "sub": "6ad3a14e-2ffd-4e3a-9013-b981a202b159"
+}
+```
+
+jwt
+`eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6IlRoZVphdml0YWV2IiwiZmlyc3RfbmFtZSI6Ik9sZWciLCJsYXN0X25hbWUiOiJaYXZpdGFldiIsImVtYWlsIjoiby56YXZpdGFldkB5YW5kZXgucnUiLCJzdWIiOiI2YWQzYTE0ZS0yZmZkLTRlM2EtOTAxMy1iOTgxYTIwMmIxNTkifQ.E34XClyBGQV5414J-CUYGQYX-7ILylnxK6Ppr1QdHM0`
+
+

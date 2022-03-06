@@ -8,7 +8,7 @@ from sqlalchemy import select, insert
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-# from movie_together.app.src.core.auth.models import CustomUser
+from movie_together.app.src.core.auth.models import CustomUser
 from movie_together.app.src.db.postgres import get_pg_engine
 from movie_together.app.src.models.db_models import Room, RoomUser
 from movie_together.app.src.models.models import RoomUserTypeEnum, RoomModel, RoomUserModel
@@ -31,48 +31,48 @@ class RoomService(BaseService):
                 logger.error(exc)
                 return f'Room for user "{user_id}" already exist!'
 
-    # async def get_room(self, room_id: UUID, user: CustomUser) -> Optional[RoomModel]:
-    #     async with self.db_connection.begin() as conn:
-    #         room_user_type = await conn.execute(
-    #             select(RoomUser.user_type).where(
-    #                 RoomUser.room_uuid == str(room_id),
-    #                 RoomUser.user_uuid == str(user.pk),
-    #             ))
-    #         existed_room_user_type = room_user_type.scalars().first()
-    #         if not existed_room_user_type:
-    #             return None
-    #
-    #         room = await conn.execute(select(Room).where(RoomUser.room_uuid == str(room_id)))
-    #         existed_room = room.mappings().fetchone()
-    #         return RoomModel(**existed_room) if existed_room else None
-    #
-    # async def join(self, user: CustomUser, room_id: str) -> Optional[str]:
-    #     async with self.db_connection.begin() as conn:
-    #         room = await conn.execute(select(Room.owner_uuid).where(Room.id == room_id))
-    #         room_owner = room.scalars().first()
-    #
-    #         if not room_owner:
-    #             return f'Room "{room_id}" does not exist!'
-    #
-    #         if user.pk == room_owner:
-    #             return f'You are the owner of the room "{room_id}"!'
-    #
-    #         try:
-    #             await conn.execute(
-    #                 insert(RoomUser, {
-    #                     RoomUser.room_uuid.key: room_id,
-    #                     RoomUser.user_uuid.key: user.pk,
-    #                 })
-    #             )
-    #         except IntegrityError as exc:
-    #             logger.error(exc)
-    #             return f'Room user "{user.pk}" already exist!'
-    #
-    # async def get_room_users(self, room_id: str) -> List[RoomUserModel]:
-    #     async with self.db_connection.begin() as conn:
-    #         results = await conn.execute(select(RoomUser).where(RoomUser.room_uuid == room_id))
-    #         room_users = results.mappings().fetchall()
-    #         return [RoomUserModel(**room_user) for room_user in room_users] if room_users else []
+    async def get_room(self, room_id: UUID, user: CustomUser) -> Optional[RoomModel]:
+        async with self.db_connection.begin() as conn:
+            room_user_type = await conn.execute(
+                select(RoomUser.user_type).where(
+                    RoomUser.room_uuid == str(room_id),
+                    RoomUser.user_uuid == str(user.pk),
+                ))
+            existed_room_user_type = room_user_type.scalars().first()
+            if not existed_room_user_type:
+                return None
+
+            room = await conn.execute(select(Room).where(RoomUser.room_uuid == str(room_id)))
+            existed_room = room.mappings().fetchone()
+            return RoomModel(**existed_room) if existed_room else None
+
+    async def join(self, user: CustomUser, room_id: str) -> Optional[str]:
+        async with self.db_connection.begin() as conn:
+            room = await conn.execute(select(Room.owner_uuid).where(Room.id == room_id))
+            room_owner = room.scalars().first()
+
+            if not room_owner:
+                return f'Room "{room_id}" does not exist!'
+
+            if user.pk == room_owner:
+                return f'You are the owner of the room "{room_id}"!'
+
+            try:
+                await conn.execute(
+                    insert(RoomUser, {
+                        RoomUser.room_uuid.key: room_id,
+                        RoomUser.user_uuid.key: user.pk,
+                    })
+                )
+            except IntegrityError as exc:
+                logger.error(exc)
+                return f'Room user "{user.pk}" already exist!'
+
+    async def get_room_users(self, room_id: str) -> List[RoomUserModel]:
+        async with self.db_connection.begin() as conn:
+            results = await conn.execute(select(RoomUser).where(RoomUser.room_uuid == room_id))
+            room_users = results.mappings().fetchall()
+            return [RoomUserModel(**room_user) for room_user in room_users] if room_users else []
 
 
 @lru_cache()

@@ -6,14 +6,18 @@ from fastapi import FastAPI, Security
 from fastapi.responses import ORJSONResponse
 from fastapi.security import APIKeyHeader
 from sqlalchemy.ext.asyncio import create_async_engine
+from starlette.middleware.authentication import AuthenticationMiddleware
 
 from movie_together.app.src.api.routers import api_router
+from movie_together.app.src.core.auth.middleware import CustomAuthBackend
 from movie_together.app.src.core.config import settings
 from movie_together.app.src.core.logger import LOGGING
 from movie_together.app.src.db import postgres
 
+
 logging_config.dictConfig(LOGGING)
-# api_key = APIKeyHeader(name='authorization', auto_error=False)
+
+api_key = APIKeyHeader(name='authorization', auto_error=False)
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -22,18 +26,20 @@ app = FastAPI(
     default_response_class=ORJSONResponse,
 )
 
-
 # Include API router
 app.include_router(
     api_router,
     prefix='/api',
-    # dependencies=[Security(api_key)],
+    dependencies=[Security(api_key)],
 )
 
+# Activate auth middleware
+app.add_middleware(AuthenticationMiddleware, backend=CustomAuthBackend())
 
-# @app.on_event('startup')
-# async def startup():
-#     postgres.async_pg_engine = create_async_engine(settings.pg_dsn, echo=True)
+
+@app.on_event('startup')
+async def startup():
+    postgres.async_pg_engine = create_async_engine(settings.pg_dsn, echo=True)
 
 
 @app.on_event('shutdown')
