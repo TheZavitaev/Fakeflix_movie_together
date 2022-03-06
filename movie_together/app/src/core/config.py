@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     DB_PORT: int = 5432
     DB_USERNAME: str = 'postgres'
     DB_PASSWORD: str = 'postgres'
-    DB_NAME: str = 'postgres'
+    DB_NAME: str = 'movie_together'
 
     KAFKA_HOST: str = os.getenv('KAFKA_HOST', 'kafka')
     KAFKA_PORT: int = 29092
