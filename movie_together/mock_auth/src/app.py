@@ -9,13 +9,15 @@ auth_database = {
         "first_name": "Aleksey",
         "last_name": "Kucheryavenko",
         "email": "kap17597@yandex.ru",
+        "id": "80c19d3c-7ed9-4882-ab33-789fe45991c4",
     },
     "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik9sZWciLCJpYXQiOjE1MTYyMzkwMjJ9.v3C2__WNGbbu17Ca6rVukPjcU0yGTeexz7QBNX42Pfc": {
         "username": "TheZavitaev",
         "first_name": "Oleg",
         "last_name": "Zavitaev",
         "email": "o.zavitaev@yandex.ru",
-    }
+        "id": "6ad3a14e-2ffd-4e3a-9013-b981a202b159",
+    },
 }
 
 
