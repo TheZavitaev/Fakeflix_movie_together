@@ -1,6 +1,6 @@
 .DS_Store
 /venv/
-movie_together/.env
+.env
 .idea
 
 # ---> Python
@@ -75,3 +75,5 @@ target/
 /certs/
 /.mypy_cache/new_model.py
 /.pytest_cache/
+/BUGS.md
+/node_modules/

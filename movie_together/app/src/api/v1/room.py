@@ -1,10 +1,12 @@
+import time
 from typing import Optional
 
+import aiohttp
 import aiohttp
 import asyncio
 import uuid
 
-from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, Header
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, Header, status
 from starlette.background import BackgroundTasks
 from starlette.requests import Request
 
@@ -61,13 +63,16 @@ async def get_user_data(authorization: str) -> Optional[dict]:
 async def websocket_endpoint(
         websocket: WebSocket,
         room_id: str,
-        authorization: str = Header(None),
+        auth: str = "",
 ):
-    user = await get_user_data(authorization)
+    await websocket.accept()
+    user = await get_user_data(auth)
+    if not user:
+        await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+        return
     connect_id = str(uuid.uuid4())
     # TODO проверять, состоит ли данный пользователь в комнате
 
-    await websocket.accept()
     consumer = KafkaConsumer(group_id=connect_id)
     producer = KafkaProducer()
     await consumer.start()
@@ -76,7 +81,14 @@ async def websocket_endpoint(
     result = await producer.produce_json(
         settings.KAFKA_TOPIC,
         room_id,
-        {"action": "CONNECT", "room_id": room_id, "username": user["username"], "connect_id": connect_id, "user": user}
+        {
+            "action": "CONNECT",
+            "room_id": room_id,
+            "username": user["username"],
+            "connect_id": connect_id,
+            "data": user,
+            "datetime": int(time.time()),
+        }
     )
     consumer.assign([(settings.KAFKA_TOPIC, result.partition)])
 
@@ -89,12 +101,19 @@ async def websocket_endpoint(
             message["connect_id"] = connect_id
             message["username"] = user["username"]
             message["room_id"] = room_id
+            message["datetime"] = int(time.time()),
             await producer.produce_json(settings.KAFKA_TOPIC, room_id, message)
     except WebSocketDisconnect:
         await producer.produce_json(
             settings.KAFKA_TOPIC,
             room_id,
-            {"action": "DISCONNECT", "room_id": room_id, "username": user["username"], "connect_id": connect_id}
+            {
+                "action": "DISCONNECT",
+                "room_id": room_id,
+                "username": user["username"],
+                "connect_id": connect_id,
+                "datetime": int(time.time()),
+            }
         )
         task.cancel()
         await producer.close()
