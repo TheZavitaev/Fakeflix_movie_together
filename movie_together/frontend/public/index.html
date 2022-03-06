@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Video&Chat</title>
+    </head>
+    <body>
+    <form class="connectForm">
+        <label for="session">session_id</label>
+        <input id="session" type="text" class="connectForm_session">
+        <label for="token">bearer token</label>
+        <input id="token" type="text" class="connectForm_token">
+        <input type="submit" value="Connect">
+    </form>
+
+    <div class="session" style="display: none">
+        <h1>Websocket Video</h1>
+        <video class="video" width="400" height="300" controls="controls">
+            <source src="video.mp4" type="video/mp4;">
+        </video>
+
+        <h1>WebSocket Chat</h1>
+        <form class="messageForm" action="">
+            <input type="text" class="messageForm__text" autocomplete="off"/>
+            <input type="submit" value="Send">
+        </form>
+        <ul class='messageList'></ul>
+    </div>
+    <script src="script.js"></script>
+    </body>
+</html>
