@@ -1,9 +1,12 @@
 1) `cd movie_together`
 2) `docker-compose up -d db`
 3) `pip install -r movie_together/app/requirements.txt`
-4) `alembic upgrade head`
+4) `psql -h localhost -p 5432 -U postgres` pwd: `postgres`
+5) `create database movie_together;`
+6) `\q`
+7) `alembic upgrade head`
 
-Если я где-то накосячил (а я накосячил, при компоуз ап не создаю пока БД `movie_together`):
+Если я где-то накосячил:
 
 1) создали БД
 ```sql
