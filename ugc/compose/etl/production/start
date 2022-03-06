@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cd src && python /wait_for_kafka.py && python main.py
