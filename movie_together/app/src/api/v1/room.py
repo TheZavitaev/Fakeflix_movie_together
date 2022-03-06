@@ -60,14 +60,11 @@ async def websocket_endpoint(
         room_id: str,
         authorization: str = Header(None),
 ):
-    # TODO получать id пользователя из auth по bearer-токену
     user = await get_user_data(authorization)
-
-    await websocket.accept()
-    # TODO получать id подключения, чтобы создавать group_id
     connect_id = str(uuid.uuid4())
     # TODO проверять, состоит ли данный пользователь в комнате
 
+    await websocket.accept()
     consumer = KafkaConsumer(group_id=connect_id)
     producer = KafkaProducer()
     await consumer.start()
