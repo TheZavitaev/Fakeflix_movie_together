@@ -75,3 +75,4 @@ target/
 /.mypy_cache/new_model.py
 /.pytest_cache/
 /BUGS.md
+/node_modules/

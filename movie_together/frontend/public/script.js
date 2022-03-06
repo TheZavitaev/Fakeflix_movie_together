@@ -1,4 +1,5 @@
 const users = new Map();
+let dognalVideo = false;
 
 function addMessage(text) {
     const messages = document.querySelector('.messageList');
@@ -9,7 +10,7 @@ function addMessage(text) {
 }
 
 function getMessage(connectTime, event) {
-    const data = JSON.parse(event.data)
+    const data = JSON.parse(event.data);
     if (data.action === "MESSAGE") {
         const user = users.get(data.username);
         addMessage(
@@ -24,7 +25,17 @@ function getMessage(connectTime, event) {
         }
     }
     else if (data.datetime >= connectTime) {
-        if (data.action === "PLAYER-play") {
+        if (data.action === "PLAYER-timeupdate" && !dognalVideo) {
+            const video = document.querySelector(".video");
+            video.currentTime = data.data.currentTime;
+            if (data.data.paused) {
+                video.pause();
+            } else {
+                video.play();
+            }
+            dognalVideo = true;
+        }
+        else if (data.action === "PLAYER-play") {
             const video = document.querySelector(".video");
             video.currentTime = data.data.currentTime;
             if (video.paused) {
@@ -51,9 +62,9 @@ function sendMessage(ws, event) {
     const data = {
         action: 'MESSAGE',
         data: input.value,
-    }
-    ws.send(JSON.stringify(data))
-    input.value = ''
+    };
+    ws.send(JSON.stringify(data));
+    input.value = '';
     addMessage(`You: ${data.data}`);
 }
 
@@ -63,8 +74,22 @@ function controlVideo(ws, event) {
         data: {
             currentTime: event.target.currentTime,
         },
+    };
+    ws.send(JSON.stringify(data));
+}
+
+
+function updateVideoTime(ws, event) {
+    if (Math.floor(event.target.currentTime) % 2 === 0) {
+        const data = {
+            action: `PLAYER-${event.type}`,
+            data: {
+                currentTime: event.target.currentTime,
+                paused: event.target.paused,
+            },
+        };
+        ws.send(JSON.stringify(data));
     }
-    ws.send(JSON.stringify(data))
 }
 
 
@@ -76,19 +101,28 @@ function connect(event) {
     const ws = new WebSocket(
         `ws://localhost:8000/api/v1/room/${sessionInput.value}?auth=${tokenInput.value}`
     );
-    ws.onopen = event => {
+    ws.onopen = () => {
         const connectTime = Date.now() / 1000;
 
         document.querySelector(".session").style.display = "block";
         ws.addEventListener("message", getMessage.bind(null, connectTime));
         document.querySelector(".messageForm")
-            .addEventListener("submit", sendMessage.bind(null, ws))
+            .addEventListener("submit", sendMessage.bind(null, ws));
         document.querySelector(".video")
-            .addEventListener("play", controlVideo.bind(null, ws))
+            .addEventListener("play", controlVideo.bind(null, ws));
         document.querySelector(".video")
-            .addEventListener("pause", controlVideo.bind(null, ws))
+            .addEventListener("pause", controlVideo.bind(null, ws));
+        document.querySelector(".video")
+            .addEventListener("timeupdate", updateVideoTime.bind(null, ws));
     }
-    ws.onclose = event => {
+    ws.onclose = () => {
+        dognalVideo = false;
+        document.querySelector(".video")
+            .removeEventListener("timeupdate", updateVideoTime.bind(null, ws));
+        document.querySelector(".video")
+            .removeEventListener("pause", controlVideo.bind(null, ws));
+        document.querySelector(".video")
+            .removeEventListener("play", controlVideo.bind(null, ws));
         document.querySelector(".messageForm")
             .removeEventListener("submit", sendMessage.bind(null, ws))
         ws.removeEventListener("message", getMessage);
