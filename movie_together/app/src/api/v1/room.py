@@ -1,3 +1,6 @@
+from typing import Optional
+
+import aiohttp
 import asyncio
 import uuid
 
@@ -36,17 +39,33 @@ async def send_to_websocket(messages: list, websocket: WebSocket, current_sessio
             await websocket.send_json(message)
 
 
+# TODO return model instead of dict
+async def get_user_data(authorization: str) -> Optional[dict]:
+    async with aiohttp.ClientSession() as session:
+        # TODO url and header name from config envs
+        resp = await session.get(
+            'http://localhost:5555/api/v1/me',
+            headers={
+                "authorization": authorization,
+            },
+        )
+        if resp.status != 200:
+            return
+        return await resp.json()
+
+
 @room_router.websocket('/{room_id}')
 async def websocket_endpoint(
         websocket: WebSocket,
         room_id: str,
-        user: str = Header(None),   # FIXME получать id пользователя из auth по bearer-токену
+        authorization: str = Header(None),
 ):
+    # TODO получать id пользователя из auth по bearer-токену
+    user = await get_user_data(authorization)
+
     await websocket.accept()
     # TODO получать id подключения, чтобы создавать group_id
     connect_id = str(uuid.uuid4())
-    # TODO получать id пользователя из auth по bearer-токену
-    user_id = user
     # TODO проверять, состоит ли данный пользователь в комнате
 
     consumer = KafkaConsumer(group_id=connect_id)
@@ -57,7 +76,7 @@ async def websocket_endpoint(
     result = await producer.produce_json(
         settings.KAFKA_TOPIC,
         room_id,
-        {"action": "CONNECT", "room_id": room_id, "user_id": user_id, "connect_id": connect_id}
+        {"action": "CONNECT", "room_id": room_id, "username": user["username"], "connect_id": connect_id, "user": user}
     )
     consumer.assign([(settings.KAFKA_TOPIC, result.partition)])
 
@@ -68,14 +87,14 @@ async def websocket_endpoint(
         while True:
             message = await websocket.receive_json()
             message["connect_id"] = connect_id
-            message["user_id"] = user_id
+            message["username"] = user["username"]
             message["room_id"] = room_id
             await producer.produce_json(settings.KAFKA_TOPIC, room_id, message)
     except WebSocketDisconnect:
         await producer.produce_json(
             settings.KAFKA_TOPIC,
             room_id,
-            {"action": "DISCONNECT", "room_id": room_id, "user_id": user_id, "connect_id": connect_id}
+            {"action": "DISCONNECT", "room_id": room_id, "username": user["username"], "connect_id": connect_id}
         )
         task.cancel()
         await producer.close()
