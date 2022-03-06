@@ -1,6 +1,6 @@
 .DS_Store
 /venv/
-.env
+movie_together/.env
 .idea
 
 # ---> Python
@@ -14,6 +14,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+*.env
 env/
 build/
 develop-eggs/
@@ -74,4 +75,3 @@ target/
 /certs/
 /.mypy_cache/new_model.py
 /.pytest_cache/
-/BUGS.md

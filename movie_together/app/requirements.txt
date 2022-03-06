@@ -1,6 +1,8 @@
+alembic==1.7.6
 fastapi==0.63.0
 uvicorn[standard]==0.13.4
 aiofiles==0.8.0
 orjson==3.6.7
 sqlalchemy==1.4.31
 aiokafka==0.7.2
+psycopg2-binary==2.9.3

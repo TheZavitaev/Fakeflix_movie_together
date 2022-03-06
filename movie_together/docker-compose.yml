@@ -7,6 +7,7 @@ services:
       - .env
     restart: unless-stopped
 
+
   kafka:
     image: confluentinc/cp-kafka:7.0.1
     depends_on:
@@ -16,6 +17,17 @@ services:
     env_file:
       - .env
     restart: unless-stopped
+
+  db:
+    image: postgres:14
+    container_name: movie_together
+    ports:
+      - 5432:5432
+    restart: always
+    env_file:
+      - .env
+#    volumes:
+#      - pg_data:/var/lib/postgresql/data/pgdata
 
 #  topics_init_python:
 #    container_name: topics_init_python
