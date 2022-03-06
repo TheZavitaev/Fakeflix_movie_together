@@ -19,13 +19,16 @@ logger = logging.getLogger(__name__)
 
 class RoomService(BaseService):
 
-    async def create_user_room(self, user_id: str):
+    async def create_user_room(self, user_id: str, link: str, film_work_uuid: UUID):
         async with self.get_session() as session:
             try:
                 async with session.begin():
                     session.add(Room(
+                        room_users=[RoomUser(user_uuid=user_id, user_type=RoomUserTypeEnum.owner.value)],
                         owner_uuid=user_id,
-                        room_users=[RoomUser(user_uuid=user_id, user_type=RoomUserTypeEnum.owner.value)])
+                        film_work_uuid=film_work_uuid,
+                        link=link
+                        )
                     )
             except IntegrityError as exc:
                 logger.error(exc)
