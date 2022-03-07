@@ -1,10 +1,12 @@
 import logging
 from logging import config as logging_config
 
+import sentry_sdk
 import uvicorn as uvicorn
 from fastapi import FastAPI, Security
 from fastapi.responses import ORJSONResponse
 from fastapi.security import APIKeyHeader
+from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from sqlalchemy.ext.asyncio import create_async_engine
 from starlette.middleware.authentication import AuthenticationMiddleware
 
@@ -35,6 +37,13 @@ app.include_router(
 
 # Activate auth middleware
 app.add_middleware(AuthenticationMiddleware, backend=CustomAuthBackend())
+
+# Initiate Sentry
+sentry_sdk.init(
+    dsn=settings.SENTRY_DSN
+)
+asgi_app = SentryAsgiMiddleware(app)
+app.add_middleware(SentryAsgiMiddleware)
 
 
 @app.on_event('startup')
