@@ -1,19 +1,18 @@
-import time
+import json
+import os
 from typing import Optional
 
-import aiohttp
 import aiohttp
 import asyncio
 import uuid
 
-from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, Header, status
-from starlette.background import BackgroundTasks
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, status
 from starlette.requests import Request
 
 from movie_together.app.src.core.config import settings
 from movie_together.app.src.core.auth.decorators import login_required
 from movie_together.app.src.core.utils import create_room_link
-from movie_together.app.src.models.models import ResponseModel
+from movie_together.app.src.models.models import ResponseModel, WebsocketMessage, MessageAction, User
 from movie_together.app.src.services.room import RoomService, get_room_service
 from movie_together.app.src.services.queue_consumer import KafkaConsumer
 from movie_together.app.src.services.queue_producer import KafkaProducer
@@ -35,42 +34,53 @@ async def create_room(
     return ResponseModel(success=True)
 
 
-# TODO сериализация сообщения
-
-async def send_to_websocket(messages: list, websocket: WebSocket, current_session: str, current_connect: str):
+async def send_to_websocket(
+        messages: list,
+        websocket: WebSocket,
+        current_session: uuid.UUID,
+        current_connect: uuid.UUID
+):
     for message in messages:
-        if message.get('room_id') == current_session and message.get('connect_id') != current_connect:
-            del message['connect_id']
-            await websocket.send_json(message)
+        message_obj = WebsocketMessage(**json.loads(message))
+        if message_obj.room_id == current_session and message_obj.connect_id != current_connect:
+            del message_obj.connect_id
+            await websocket.send_text(message_obj.json())
 
 
-# TODO return model instead of dict
-async def get_user_data(authorization: str) -> Optional[dict]:
+async def get_user_data(authorization: str) -> Optional[User]:
     async with aiohttp.ClientSession() as session:
-        # TODO url and header name from config envs
+        # TODO обработка ошибки коннекта, backoff
         resp = await session.get(
-            'http://localhost:5555/api/v1/me',
+            url=os.path.join(
+                settings.auth_service_url,
+                settings.AUTH_SERVICE_API_ENDPOINT,
+                settings.AUTH_SERVICE_V1_ENDPOINT,
+                settings.AUTH_SERVICE_GET_ME_ENDPOINT,
+            ),
             headers={
-                "authorization": authorization,
+                settings.AUTHORIZATION_HEADER_NAME: authorization,
             },
         )
         if resp.status != 200:
             return
-        return await resp.json()
+        raw_user = await resp.json()
+        return User(**raw_user)
 
 
 @room_router.websocket('/{room_id}')
 async def websocket_endpoint(
         websocket: WebSocket,
         room_id: str,
-        auth: str = "",
+        auth: str = '',
 ):
+    room_id_as_uuid = uuid.UUID(room_id)
+
     await websocket.accept()
     user = await get_user_data(auth)
     if not user:
         await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
         return
-    connect_id = str(uuid.uuid4())
+    connect_id = uuid.uuid4()
     # TODO проверять, состоит ли данный пользователь в комнате
 
     consumer = KafkaConsumer(group_id=connect_id)
@@ -78,42 +88,41 @@ async def websocket_endpoint(
     await consumer.start()
     await producer.start()
 
-    result = await producer.produce_json(
+    result = await producer.produce(
         settings.KAFKA_TOPIC,
         room_id,
-        {
-            "action": "CONNECT",
-            "room_id": room_id,
-            "username": user["username"],
-            "connect_id": connect_id,
-            "data": user,
-            "datetime": int(time.time()),
-        }
+        WebsocketMessage(
+            action=MessageAction.connect,
+            room_id=room_id_as_uuid,
+            username=user.username,
+            connect_id=connect_id,
+            data=user,
+        ).json(),
     )
     consumer.assign([(settings.KAFKA_TOPIC, result.partition)])
 
     loop = asyncio.get_event_loop()
-    task = loop.create_task(consumer.consume_loop(send_to_websocket, websocket, room_id, connect_id))
+    task = loop.create_task(consumer.consume_loop(send_to_websocket, websocket, room_id_as_uuid, connect_id))
 
     try:
         while True:
-            message = await websocket.receive_json()
-            message["connect_id"] = connect_id
-            message["username"] = user["username"]
-            message["room_id"] = room_id
-            message["datetime"] = int(time.time()),
-            await producer.produce_json(settings.KAFKA_TOPIC, room_id, message)
+            message_raw = await websocket.receive_json()
+            message = WebsocketMessage(**message_raw)
+            message.connect_id = connect_id
+            message.username = user.username
+            message.room_id = room_id_as_uuid
+            await producer.produce(settings.KAFKA_TOPIC, room_id, message.json())
     except WebSocketDisconnect:
-        await producer.produce_json(
+        await producer.produce(
             settings.KAFKA_TOPIC,
             room_id,
-            {
-                "action": "DISCONNECT",
-                "room_id": room_id,
-                "username": user["username"],
-                "connect_id": connect_id,
-                "datetime": int(time.time()),
-            }
+            WebsocketMessage(
+                action=MessageAction.disconnect,
+                room_id=room_id_as_uuid,
+                username=user.username,
+                connect_id=connect_id,
+                data=user,
+            ).json(),
         )
         task.cancel()
         await producer.close()
