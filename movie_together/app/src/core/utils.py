@@ -9,7 +9,7 @@ def orjson_dumps(v, *, default):
 
 
 def create_room_link(room_id: UUID):
-    return f'http://0.0.0.0:8000/api/v1/room/join?room_id={str(room_id)}'
+    return f'http://0.0.0.0:8000/api/v1/room/{str(room_id)}/join'
 
 
 def create_short_link(url) -> str:

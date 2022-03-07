@@ -42,7 +42,7 @@ async def create_room(
     return ResponseModel(success=True, link=link)
 
 
-@room_router.post('/disconnect', response_model=ResponseUser)
+@room_router.post('/{room_id}/disconnect', response_model=ResponseUser)
 @login_required()
 async def disconnect_user(
         request: Request,
@@ -58,7 +58,7 @@ async def disconnect_user(
     return ResponseUser(success=True)
 
 
-@room_router.get('/join', response_model=ResponseUser)
+@room_router.get('/{room_id}/join', response_model=ResponseUser)
 @login_required()
 async def join_user(
         request: Request,
@@ -69,9 +69,9 @@ async def join_user(
     error = await service.join(user=request.user, room_id=room_id)
 
     if error:
-        return ResponseUser(success=True, errors=[error])
+        return ResponseUser(success=False, errors=[error])
 
-    return ResponseUser(success=False)
+    return ResponseUser(success=True)
 
 
 async def send_to_websocket(
