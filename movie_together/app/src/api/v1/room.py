@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 
 import aiohttp
@@ -11,7 +12,7 @@ from starlette.requests import Request
 from movie_together.app.src.core.config import settings
 from movie_together.app.src.core.auth.decorators import login_required
 from movie_together.app.src.core.utils import create_room_link
-from movie_together.app.src.models.models import ResponseModel
+from movie_together.app.src.models.models import ResponseModel, ResponseUserDisconnect
 from movie_together.app.src.services.room import RoomService, get_room_service
 from movie_together.app.src.services.queue_consumer import KafkaConsumer
 from movie_together.app.src.services.queue_producer import KafkaProducer
@@ -25,12 +26,30 @@ async def create_room(
         request: Request,
         service: RoomService = Depends(get_room_service),
 ) -> ResponseModel:
+
     link = create_room_link()
     film_work_uuid = uuid.uuid4()
+
     error = await service.create_user_room(user_id=request.user.pk, link=link, film_work_uuid=film_work_uuid)
     if error:
         return ResponseModel(success=False, errors=[error])
-    return ResponseModel(success=True)
+    return ResponseModel(success=True, link=link)
+
+
+@room_router.post('/disconnect', response_model=ResponseUserDisconnect)
+@login_required()
+async def disconnect_user(
+        request: Request,
+        room_id: str,
+        service: RoomService = Depends(get_room_service)
+) -> ResponseUserDisconnect:
+
+    result = await service.disconnect_user(user=request.user, room_id=room_id)
+
+    if not result:
+        return ResponseUserDisconnect(success=False)
+
+    return ResponseUserDisconnect(success=True)
 
 
 # TODO сериализация сообщения

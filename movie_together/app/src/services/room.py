@@ -4,7 +4,7 @@ from typing import List, Optional
 from uuid import UUID
 
 from fastapi import Depends
-from sqlalchemy import select, insert
+from sqlalchemy import select, insert, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncEngine
 
@@ -28,7 +28,7 @@ class RoomService(BaseService):
                         owner_uuid=user_id,
                         film_work_uuid=film_work_uuid,
                         link=link
-                        )
+                    )
                     )
             except IntegrityError as exc:
                 logger.error(exc)
@@ -76,6 +76,16 @@ class RoomService(BaseService):
             results = await conn.execute(select(RoomUser).where(RoomUser.room_uuid == room_id))
             room_users = results.mappings().fetchall()
             return [RoomUserModel(**room_user) for room_user in room_users] if room_users else []
+
+    async def disconnect_user(self, user: CustomUser, room_id: str):
+        async with self.db_connection.begin() as conn:
+            if await conn.execute(delete(RoomUser).where(
+                    RoomUser.room_uuid == str(room_id),
+                    RoomUser.user_uuid == str(user.pk),
+            )):
+                return True
+
+            return f'User "{user.pk}" does not exist in the room "{room_id}"!'
 
 
 @lru_cache()
