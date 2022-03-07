@@ -32,7 +32,7 @@ services:
   api:
     container_name: movie_together_api
     build:
-      context: movie_together
+      context: .
       dockerfile: dockerfiles/api/Dockerfile
     ports:
       - "8000:8000"
