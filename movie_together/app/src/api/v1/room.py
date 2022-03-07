@@ -1,22 +1,19 @@
+import asyncio
 import time
+import uuid
 from typing import Optional
 
 import aiohttp
-import aiohttp
-import asyncio
-import uuid
-
-from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, Header, status
-from starlette.background import BackgroundTasks
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, status
 from starlette.requests import Request
 
-from movie_together.app.src.core.config import settings
 from movie_together.app.src.core.auth.decorators import login_required
+from movie_together.app.src.core.config import settings
 from movie_together.app.src.core.utils import create_short_link, create_room_link
 from movie_together.app.src.models.models import ResponseModel, ResponseUser
-from movie_together.app.src.services.room import RoomService, get_room_service
 from movie_together.app.src.services.queue_consumer import KafkaConsumer
 from movie_together.app.src.services.queue_producer import KafkaProducer
+from movie_together.app.src.services.room import RoomService, get_room_service
 
 room_router = APIRouter()
 
