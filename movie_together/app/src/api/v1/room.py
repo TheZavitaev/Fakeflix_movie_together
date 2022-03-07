@@ -67,12 +67,12 @@ async def join_user(
         service: RoomService = Depends(get_room_service)
 ) -> ResponseUser:
 
-    result = await service.join(user=request.user, room_id=room_id)
+    error = await service.join(user=request.user, room_id=room_id)
 
-    if not result:
-        return ResponseUser(success=False)
+    if error:
+        return ResponseUser(success=True, errors=[error])
 
-    return ResponseUser(success=True)
+    return ResponseUser(success=False)
 
 
 # TODO сериализация сообщения

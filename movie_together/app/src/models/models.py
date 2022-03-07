@@ -28,6 +28,7 @@ class ResponseModel(BaseModel):
 
 class ResponseUser(BaseModel):
     success: bool
+    errors: List[str] = []
 
 
 class RoomModel(BaseModel):
