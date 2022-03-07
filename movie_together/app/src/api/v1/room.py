@@ -69,9 +69,9 @@ async def join_user(
     error = await service.join(user=request.user, room_id=room_id)
 
     if error:
-        return ResponseUser(success=True, errors=[error])
+        return ResponseUser(success=False, errors=[error])
 
-    return ResponseUser(success=False)
+    return ResponseUser(success=True)
 
 
 async def send_to_websocket(
