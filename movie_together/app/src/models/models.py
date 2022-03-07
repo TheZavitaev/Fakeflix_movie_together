@@ -26,7 +26,7 @@ class ResponseModel(BaseModel):
     link: str | None = None
 
 
-class ResponseUserDisconnect(BaseModel):
+class ResponseUser(BaseModel):
     success: bool
 
 

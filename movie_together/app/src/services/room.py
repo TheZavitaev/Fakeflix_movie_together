@@ -1,4 +1,5 @@
 import logging
+import uuid
 from functools import lru_cache
 from typing import List, Optional
 from uuid import UUID
@@ -19,11 +20,12 @@ logger = logging.getLogger(__name__)
 
 class RoomService(BaseService):
 
-    async def create_user_room(self, user_id: str, link: str, film_work_uuid: UUID):
+    async def create_user_room(self, room_id: UUID, user_id: str, link: str, film_work_uuid: UUID):
         async with self.get_session() as session:
             try:
                 async with session.begin():
                     session.add(Room(
+                        id=room_id,
                         room_users=[RoomUser(user_uuid=user_id, user_type=RoomUserTypeEnum.owner.value)],
                         owner_uuid=user_id,
                         film_work_uuid=film_work_uuid,
