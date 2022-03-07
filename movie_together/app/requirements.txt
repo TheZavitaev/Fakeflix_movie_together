@@ -13,3 +13,4 @@ aiokafka==0.7.2
 psycopg2-binary==2.9.3
 aiokafka==0.7.2
 PyJWT==2.3.0
+pyshorteners

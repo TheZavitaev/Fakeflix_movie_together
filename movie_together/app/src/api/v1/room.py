@@ -11,8 +11,8 @@ from starlette.requests import Request
 
 from movie_together.app.src.core.config import settings
 from movie_together.app.src.core.auth.decorators import login_required
-from movie_together.app.src.core.utils import create_room_link
-from movie_together.app.src.models.models import ResponseModel, WebsocketMessage, MessageAction, User
+from movie_together.app.src.core.utils import create_room_link, create_room_link
+from movie_together.app.src.models.models import ResponseModel, WebsocketMessage, MessageAction, User, ResponseUser
 from movie_together.app.src.services.room import RoomService, get_room_service
 from movie_together.app.src.services.queue_consumer import KafkaConsumer
 from movie_together.app.src.services.queue_producer import KafkaProducer
@@ -26,12 +26,52 @@ async def create_room(
         request: Request,
         service: RoomService = Depends(get_room_service),
 ) -> ResponseModel:
-    link = create_room_link()
+
+    room_id = uuid.uuid4()
     film_work_uuid = uuid.uuid4()
-    error = await service.create_user_room(user_id=request.user.pk, link=link, film_work_uuid=film_work_uuid)
+
+    error = await service.create_user_room(
+        room_id=room_id,
+        user_id=request.user.pk,
+        link=create_room_link(room_id),
+        film_work_uuid=film_work_uuid
+    )
     if error:
         return ResponseModel(success=False, errors=[error])
-    return ResponseModel(success=True)
+    link = create_short_link(create_room_link(room_id))
+    return ResponseModel(success=True, link=link)
+
+
+@room_router.post('/disconnect', response_model=ResponseUser)
+@login_required()
+async def disconnect_user(
+        request: Request,
+        room_id: str,
+        service: RoomService = Depends(get_room_service)
+) -> ResponseUser:
+
+    result = await service.disconnect_user(user=request.user, room_id=room_id)
+
+    if not result:
+        return ResponseUser(success=False)
+
+    return ResponseUser(success=True)
+
+
+@room_router.get('/join', response_model=ResponseUser)
+@login_required()
+async def join_user(
+        request: Request,
+        room_id: str,
+        service: RoomService = Depends(get_room_service)
+) -> ResponseUser:
+
+    error = await service.join(user=request.user, room_id=room_id)
+
+    if error:
+        return ResponseUser(success=True, errors=[error])
+
+    return ResponseUser(success=False)
 
 
 async def send_to_websocket(

@@ -24,6 +24,12 @@ class BaseModel(PydanticBaseModel):
 class ResponseModel(BaseModel):
     success: bool
     errors: List[str] = []
+    link: str | None = None
+
+
+class ResponseUser(BaseModel):
+    success: bool
+    errors: List[str] = []
 
 
 class RoomModel(BaseModel):

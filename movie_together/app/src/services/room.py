@@ -1,10 +1,11 @@
 import logging
+import uuid
 from functools import lru_cache
 from typing import List, Optional
 from uuid import UUID
 
 from fastapi import Depends
-from sqlalchemy import select, insert
+from sqlalchemy import select, insert, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncEngine
 
@@ -19,16 +20,17 @@ logger = logging.getLogger(__name__)
 
 class RoomService(BaseService):
 
-    async def create_user_room(self, user_id: str, link: str, film_work_uuid: UUID):
+    async def create_user_room(self, room_id: UUID, user_id: str, link: str, film_work_uuid: UUID):
         async with self.get_session() as session:
             try:
                 async with session.begin():
                     session.add(Room(
+                        id=room_id,
                         room_users=[RoomUser(user_uuid=user_id, user_type=RoomUserTypeEnum.owner.value)],
                         owner_uuid=user_id,
                         film_work_uuid=film_work_uuid,
                         link=link
-                        )
+                    )
                     )
             except IntegrityError as exc:
                 logger.error(exc)
@@ -76,6 +78,16 @@ class RoomService(BaseService):
             results = await conn.execute(select(RoomUser).where(RoomUser.room_uuid == room_id))
             room_users = results.mappings().fetchall()
             return [RoomUserModel(**room_user) for room_user in room_users] if room_users else []
+
+    async def disconnect_user(self, user: CustomUser, room_id: str):
+        async with self.db_connection.begin() as conn:
+            if await conn.execute(delete(RoomUser).where(
+                    RoomUser.room_uuid == str(room_id),
+                    RoomUser.user_uuid == str(user.pk),
+            )):
+                return True
+
+            return f'User "{user.pk}" does not exist in the room "{room_id}"!'
 
 
 @lru_cache()
