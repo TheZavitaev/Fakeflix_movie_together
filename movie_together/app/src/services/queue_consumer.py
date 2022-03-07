@@ -1,12 +1,9 @@
-import asyncio
 import json
 
 from aiokafka import AIOKafkaConsumer
-
+from core.config import settings
 # Initialize logger
 from kafka import TopicPartition
-
-from core.config import settings
 
 
 def deserializer(value):
