@@ -67,6 +67,7 @@ class RoomService(BaseService):
                     insert(RoomUser, {
                         RoomUser.room_uuid.key: room_id,
                         RoomUser.user_uuid.key: user.pk,
+                        RoomUser.user_type: RoomUserTypeEnum.member.value
                     })
                 )
             except IntegrityError as exc:
