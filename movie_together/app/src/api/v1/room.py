@@ -11,7 +11,7 @@ from starlette.requests import Request
 
 from movie_together.app.src.core.config import settings
 from movie_together.app.src.core.auth.decorators import login_required
-from movie_together.app.src.core.utils import create_room_link, create_room_link
+from movie_together.app.src.core.utils import create_room_link, create_short_link
 from movie_together.app.src.models.models import ResponseModel, WebsocketMessage, MessageAction, User, ResponseUser
 from movie_together.app.src.services.room import RoomService, get_room_service
 from movie_together.app.src.services.queue_consumer import KafkaConsumer
