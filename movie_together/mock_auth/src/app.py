@@ -4,14 +4,14 @@ app = Flask(__name__)
 
 
 auth_database = {
-    "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFsZXgiLCJpYXQiOjE1MTYyMzkwMjJ9.eYLYdLSJI8N1wFc5f3U0BMKuTJv8mcwfmA8is1f7ctc": {
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4MGMxOWQzYy03ZWQ5LTQ4ODItYWIzMy03ODlmZTQ1OTkxYzQiLCJmaXJzdF9uYW1lIjoiQWxla3NleSIsImxhc3RfbmFtZSI6Ikt1Y2hlcnlhdmVua28iLCJpYXQiOjE1MTYyMzkwMjJ9.xLp_4zECLl-0YpbcPpy-SOi9o7sO64_1G37tJ0ZWw7A": {
         "username": "frbgd",
         "first_name": "Aleksey",
         "last_name": "Kucheryavenko",
         "email": "kap17597@yandex.ru",
         "id": "80c19d3c-7ed9-4882-ab33-789fe45991c4",
     },
-    "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik9sZWciLCJpYXQiOjE1MTYyMzkwMjJ9.v3C2__WNGbbu17Ca6rVukPjcU0yGTeexz7QBNX42Pfc": {
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YWQzYTE0ZS0yZmZkLTRlM2EtOTAxMy1iOTgxYTIwMmIxNTkiLCJmaXJzdF9uYW1lIjoiT2xlZyIsImxhc3RfbmFtZSI6Ilphdml0YWV2IiwiaWF0IjoxNTE2MjM5MDIyfQ.5G12pR-rel7UHNz7kdNrNcQ_it63pHmKCM7_eeM1zSY": {
         "username": "TheZavitaev",
         "first_name": "Oleg",
         "last_name": "Zavitaev",
