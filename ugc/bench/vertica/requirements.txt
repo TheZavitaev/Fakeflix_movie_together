@@ -1,3 +1,0 @@
-vertica-python
-progressbar2
-argparse
