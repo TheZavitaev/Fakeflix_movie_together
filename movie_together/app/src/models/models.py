@@ -1,6 +1,7 @@
+import time
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Union, Any
 from uuid import UUID
 
 import orjson
@@ -23,6 +24,12 @@ class BaseModel(PydanticBaseModel):
 class ResponseModel(BaseModel):
     success: bool
     errors: List[str] = []
+    link: str | None = None
+
+
+class ResponseUser(BaseModel):
+    success: bool
+    errors: List[str] = []
 
 
 class RoomModel(BaseModel):
@@ -39,3 +46,33 @@ class RoomUserModel(BaseModel):
 
     class Config:
         use_enum_values = True
+
+
+class User(BaseModel):
+    username: str
+    first_name: str
+    last_name: str
+    id: UUID
+
+
+class MessageAction(str, Enum):
+    connect = 'CONNECT'
+    disconnect = 'DISCONNECT'
+    message = 'MESSAGE'
+    player_timeupdate = 'PLAYER-timeupdate'
+    player_play = 'PLAYER-play'
+    player_pause = 'PLAYER-pause'
+
+
+class WebsocketMessage(BaseModel):
+    action: MessageAction
+    data: Union[dict, str]
+    username: Optional[str] = None
+    datetime: Optional[int] = None
+    room_id: Optional[UUID] = None
+    connect_id: Optional[UUID] = None
+
+    def __init__(self, **data: Any):
+        super().__init__(**data)
+        self.datetime = data.get('datetime', int(time.time()))
+

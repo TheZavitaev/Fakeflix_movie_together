@@ -1,3 +1,0 @@
-#!/bin/bash
-
-cd src && python /wait_for_kafka.py && gunicorn main:app --bind 0.0.0.0:8000 -k uvicorn.workers.UvicornWorker

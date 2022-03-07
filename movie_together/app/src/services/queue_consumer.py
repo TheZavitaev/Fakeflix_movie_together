@@ -23,6 +23,7 @@ class KafkaConsumer:
             max_timeout=5,
     ):
         self.config = config
+        self.group_id = str(group_id)
         self.kafka_min_commit_count = kafka_min_commit_count
         self.max_bulk_messages = max_bulk_messages
         self.max_timeout = max_timeout
@@ -31,7 +32,7 @@ class KafkaConsumer:
             bootstrap_servers=self.config.get('bootstrap_servers'),
             enable_auto_commit=self.config.get('enable_auto_commit'),
             auto_offset_reset=self.config.get('auto_offset_reset'),
-            group_id=group_id,
+            group_id=self.group_id,
             key_deserializer=deserializer,
             value_deserializer=deserializer,
         )
@@ -62,6 +63,7 @@ class KafkaConsumer:
                 msg_bulk = []
                 if msg_count % self.kafka_min_commit_count == 0:
                     await self.consumer.commit()
+                    msg_count = 0
 
     async def close(self):
         await self.consumer.stop()

@@ -1,8 +1,0 @@
-aiokafka
-backoff==1.11.1
-clickhouse-driver
-pydantic
-pydantic[dotenv]
-backoff
-python-logstash-async
-backoff
