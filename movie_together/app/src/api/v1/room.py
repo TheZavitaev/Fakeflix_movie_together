@@ -49,7 +49,6 @@ async def send_to_websocket(
 
 async def get_user_data(authorization: str) -> Optional[User]:
     async with aiohttp.ClientSession() as session:
-        # TODO обработка ошибки коннекта, backoff
         resp = await session.get(
             url=os.path.join(
                 settings.auth_service_url,
@@ -72,6 +71,7 @@ async def websocket_endpoint(
         websocket: WebSocket,
         room_id: str,
         auth: str = '',
+        room_service: RoomService = Depends(get_room_service),
 ):
     room_id_as_uuid = uuid.UUID(room_id)
 
@@ -81,7 +81,14 @@ async def websocket_endpoint(
         await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
         return
     connect_id = uuid.uuid4()
-    # TODO проверять, состоит ли данный пользователь в комнате
+
+    room_users = await room_service.get_room_users(room_id)
+    for room_user in room_users:
+        if room_user.user_uuid == user.id:
+            break
+    else:
+        await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+        return
 
     consumer = KafkaConsumer(group_id=connect_id)
     producer = KafkaProducer()
