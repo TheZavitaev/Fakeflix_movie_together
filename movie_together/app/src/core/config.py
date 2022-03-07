@@ -33,6 +33,8 @@ class Settings(BaseSettings):
     JWT_SECRET_KEY: str = 'secret'
     JWT_ALG: str = 'HS256'
 
+    SENTRY_DSN: str = 'https://41c1ac7b20f641fc81eb6c94898e4e36@o473899.ingest.sentry.io/6091607'
+
     @property
     def auth_service_url(self):
         return f'{self.AUTH_SERVICE_SCHEMA}://{self.AUTH_SERVICE_HOST}:{self.AUTH_SERVICE_PORT}'
