@@ -10,11 +10,11 @@ from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from sqlalchemy.ext.asyncio import create_async_engine
 from starlette.middleware.authentication import AuthenticationMiddleware
 
-from movie_together.app.src.api.routers import api_router
-from movie_together.app.src.core.auth.middleware import CustomAuthBackend
-from movie_together.app.src.core.config import settings
-from movie_together.app.src.core.logger import LOGGING
-from movie_together.app.src.db import postgres
+from api.routers import api_router
+from core.auth.middleware import CustomAuthBackend
+from core.config import settings
+from core.logger import LOGGING
+from db import postgres
 
 logging_config.dictConfig(LOGGING)
 

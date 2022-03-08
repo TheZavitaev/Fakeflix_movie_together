@@ -1,7 +1,7 @@
 
 from fastapi import APIRouter
 
-from movie_together.app.src.api.v1.routers import api_v1_router
+from api.v1.routers import api_v1_router
 
 api_router = APIRouter()
 

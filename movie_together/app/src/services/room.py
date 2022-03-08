@@ -3,17 +3,16 @@ from functools import lru_cache
 from typing import List, Optional
 from uuid import UUID
 
+from core.auth.models import CustomUser
+from db.postgres import get_pg_engine
 from fastapi import Depends
 from sqlalchemy import delete, insert, select
+from models.db_models import Room, RoomUser
+from models.models import RoomUserTypeEnum, RoomModel, RoomUserModel
+from services.base import BaseService
+from sqlalchemy import select, insert, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncEngine
-
-from movie_together.app.src.core.auth.models import CustomUser
-from movie_together.app.src.db.postgres import get_pg_engine
-from movie_together.app.src.models.db_models import Room, RoomUser
-from movie_together.app.src.models.models import (RoomModel, RoomUserModel,
-                                                  RoomUserTypeEnum)
-from movie_together.app.src.services.base import BaseService
 
 logger = logging.getLogger(__name__)
 
