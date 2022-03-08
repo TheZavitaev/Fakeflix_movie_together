@@ -9,13 +9,13 @@ import uuid
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, status
 from starlette.requests import Request
 
-from movie_together.app.src.core.config import settings
-from movie_together.app.src.core.auth.decorators import login_required
-from movie_together.app.src.core.utils import create_room_link, create_short_link
-from movie_together.app.src.models.models import ResponseModel, WebsocketMessage, MessageAction, User, ResponseUser
-from movie_together.app.src.services.room import RoomService, get_room_service
-from movie_together.app.src.services.queue_consumer import KafkaConsumer
-from movie_together.app.src.services.queue_producer import KafkaProducer
+from core.config import settings
+from core.auth.decorators import login_required
+from core.utils import create_room_link, create_short_link
+from models.models import ResponseModel, WebsocketMessage, MessageAction, User, ResponseUser
+from services.room import RoomService, get_room_service
+from services.queue_consumer import KafkaConsumer
+from services.queue_producer import KafkaProducer
 
 room_router = APIRouter()
 

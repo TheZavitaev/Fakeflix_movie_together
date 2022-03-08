@@ -7,7 +7,7 @@ from uuid import UUID
 import orjson
 from pydantic import BaseModel as PydanticBaseModel
 
-from movie_together.app.src.core.utils import orjson_dumps
+from core.utils import orjson_dumps
 
 
 class RoomUserTypeEnum(str, Enum):
@@ -24,7 +24,7 @@ class BaseModel(PydanticBaseModel):
 class ResponseModel(BaseModel):
     success: bool
     errors: List[str] = []
-    link: str | None = None
+    link: Optional[str] = None
 
 
 class ResponseUser(BaseModel):

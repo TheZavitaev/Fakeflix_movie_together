@@ -6,8 +6,8 @@ from starlette.authentication import AuthCredentials, UnauthenticatedUser, Authe
 
 import jwt
 
-from movie_together.app.src.core.auth.models import CustomUser
-from movie_together.app.src.core.config import settings
+from core.auth.models import CustomUser
+from core.config import settings
 
 logger = logging.getLogger(__name__)
 security = HTTPBearer()

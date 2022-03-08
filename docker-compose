@@ -44,7 +44,7 @@ services:
 
   db:
     image: postgres:14
-    container_name: movie_together
+    container_name: postgres
     ports:
       - "5432:5432"
     restart: always
@@ -55,8 +55,8 @@ services:
       options:
         max-file: "10"
         max-size: "10m"
-#    volumes:
-#      - pg_data:/var/lib/postgresql/data/pgdata
+    volumes:
+      - pg_data:/var/lib/postgresql/data/pgdata
 
 #  topics_init_python:
 #    container_name: topics_init_python
@@ -67,3 +67,6 @@ services:
 #    volumes:
 #      - ./kafka:/app/
 #    restart: on-failure
+
+volumes:
+  pg_data:
