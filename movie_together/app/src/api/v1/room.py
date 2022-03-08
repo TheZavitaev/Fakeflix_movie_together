@@ -5,19 +5,16 @@ import uuid
 from typing import Optional
 
 import aiohttp
+from core.auth.decorators import login_required
+from core.config import settings
+from core.utils import create_room_link, create_short_link
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, status
+from models.models import (MessageAction, ResponseModel, ResponseUser, User,
+                           WebsocketMessage)
+from services.queue_consumer import KafkaConsumer
+from services.queue_producer import KafkaProducer
+from services.room import RoomService, get_room_service
 from starlette.requests import Request
-
-from movie_together.app.src.core.auth.decorators import login_required
-from movie_together.app.src.core.config import settings
-from movie_together.app.src.core.utils import (create_room_link,
-                                               create_short_link)
-from movie_together.app.src.models.models import (MessageAction, ResponseModel,
-                                                  ResponseUser, User,
-                                                  WebsocketMessage)
-from movie_together.app.src.services.queue_consumer import KafkaConsumer
-from movie_together.app.src.services.queue_producer import KafkaProducer
-from movie_together.app.src.services.room import RoomService, get_room_service
 
 room_router = APIRouter()
 
@@ -44,7 +41,7 @@ async def create_room(
     return ResponseModel(success=True, link=link)
 
 
-@room_router.post('/disconnect', response_model=ResponseUser)
+@room_router.post('/{room_id}/disconnect', response_model=ResponseUser)
 @login_required()
 async def disconnect_user(
         request: Request,
@@ -60,7 +57,7 @@ async def disconnect_user(
     return ResponseUser(success=True)
 
 
-@room_router.get('/join', response_model=ResponseUser)
+@room_router.get('/{room_id}/join', response_model=ResponseUser)
 @login_required()
 async def join_user(
         request: Request,

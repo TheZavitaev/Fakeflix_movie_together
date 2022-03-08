@@ -1,13 +1,12 @@
 import logging
 
 import jwt
+from core.auth.models import CustomUser
+from core.config import settings
 from fastapi.security import HTTPBearer
 from fastapi.security.utils import get_authorization_scheme_param
 from starlette.authentication import (AuthCredentials, AuthenticationBackend,
                                       UnauthenticatedUser)
-
-from movie_together.app.src.core.auth.models import CustomUser
-from movie_together.app.src.core.config import settings
 
 logger = logging.getLogger(__name__)
 security = HTTPBearer()

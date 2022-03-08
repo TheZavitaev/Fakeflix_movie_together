@@ -1,18 +1,19 @@
 import logging
 from logging import config as logging_config
 
+import sentry_sdk
 import uvicorn as uvicorn
+from api.routers import api_router
+from core.auth.middleware import CustomAuthBackend
+from core.config import settings
+from core.logger import LOGGING
+from db import postgres
 from fastapi import FastAPI, Security
 from fastapi.responses import ORJSONResponse
 from fastapi.security import APIKeyHeader
+from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from sqlalchemy.ext.asyncio import create_async_engine
 from starlette.middleware.authentication import AuthenticationMiddleware
-
-from movie_together.app.src.api.routers import api_router
-from movie_together.app.src.core.auth.middleware import CustomAuthBackend
-from movie_together.app.src.core.config import settings
-from movie_together.app.src.core.logger import LOGGING
-from movie_together.app.src.db import postgres
 
 logging_config.dictConfig(LOGGING)
 
@@ -34,6 +35,13 @@ app.include_router(
 
 # Activate auth middleware
 app.add_middleware(AuthenticationMiddleware, backend=CustomAuthBackend())
+
+# Initiate Sentry
+sentry_sdk.init(
+    dsn=settings.SENTRY_DSN
+)
+asgi_app = SentryAsgiMiddleware(app)
+app.add_middleware(SentryAsgiMiddleware)
 
 
 @app.on_event('startup')
