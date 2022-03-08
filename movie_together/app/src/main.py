@@ -3,18 +3,17 @@ from logging import config as logging_config
 
 import sentry_sdk
 import uvicorn as uvicorn
+from api.routers import api_router
+from core.auth.middleware import CustomAuthBackend
+from core.config import settings
+from core.logger import LOGGING
+from db import postgres
 from fastapi import FastAPI, Security
 from fastapi.responses import ORJSONResponse
 from fastapi.security import APIKeyHeader
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from sqlalchemy.ext.asyncio import create_async_engine
 from starlette.middleware.authentication import AuthenticationMiddleware
-
-from api.routers import api_router
-from core.auth.middleware import CustomAuthBackend
-from core.config import settings
-from core.logger import LOGGING
-from db import postgres
 
 logging_config.dictConfig(LOGGING)
 

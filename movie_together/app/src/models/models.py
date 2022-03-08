@@ -5,9 +5,8 @@ from typing import Any, List, Optional, Union
 from uuid import UUID
 
 import orjson
-from pydantic import BaseModel as PydanticBaseModel
-
 from core.utils import orjson_dumps
+from pydantic import BaseModel as PydanticBaseModel
 
 
 class RoomUserTypeEnum(str, Enum):

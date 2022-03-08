@@ -5,16 +5,16 @@ import uuid
 from typing import Optional
 
 import aiohttp
-from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, status
-from starlette.requests import Request
-
-from core.config import settings
 from core.auth.decorators import login_required
+from core.config import settings
 from core.utils import create_room_link, create_short_link
-from models.models import ResponseModel, WebsocketMessage, MessageAction, User, ResponseUser
-from services.room import RoomService, get_room_service
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, status
+from models.models import (MessageAction, ResponseModel, ResponseUser, User,
+                           WebsocketMessage)
 from services.queue_consumer import KafkaConsumer
 from services.queue_producer import KafkaProducer
+from services.room import RoomService, get_room_service
+from starlette.requests import Request
 
 room_router = APIRouter()
 

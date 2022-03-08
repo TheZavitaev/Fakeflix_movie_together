@@ -6,11 +6,10 @@ from uuid import UUID
 from core.auth.models import CustomUser
 from db.postgres import get_pg_engine
 from fastapi import Depends
-from sqlalchemy import delete, insert, select
 from models.db_models import Room, RoomUser
-from models.models import RoomUserTypeEnum, RoomModel, RoomUserModel
+from models.models import RoomModel, RoomUserModel, RoomUserTypeEnum
 from services.base import BaseService
-from sqlalchemy import select, insert, delete
+from sqlalchemy import delete, insert, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncEngine
 

@@ -1,6 +1,5 @@
-from fastapi import APIRouter
-
 from api.v1.room import room_router
+from fastapi import APIRouter
 
 api_v1_router = APIRouter()
 
