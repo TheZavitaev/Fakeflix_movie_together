@@ -1,18 +1,18 @@
 import logging
-import uuid
 from functools import lru_cache
 from typing import List, Optional
 from uuid import UUID
 
 from fastapi import Depends
-from sqlalchemy import select, insert, delete
+from sqlalchemy import delete, insert, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from movie_together.app.src.core.auth.models import CustomUser
 from movie_together.app.src.db.postgres import get_pg_engine
 from movie_together.app.src.models.db_models import Room, RoomUser
-from movie_together.app.src.models.models import RoomUserTypeEnum, RoomModel, RoomUserModel
+from movie_together.app.src.models.models import (RoomModel, RoomUserModel,
+                                                  RoomUserTypeEnum)
 from movie_together.app.src.services.base import BaseService
 
 logger = logging.getLogger(__name__)
@@ -67,6 +67,7 @@ class RoomService(BaseService):
                     insert(RoomUser, {
                         RoomUser.room_uuid.key: room_id,
                         RoomUser.user_uuid.key: user.pk,
+                        RoomUser.user_type: RoomUserTypeEnum.member.value
                     })
                 )
             except IntegrityError as exc:

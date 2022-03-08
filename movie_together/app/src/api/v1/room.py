@@ -1,21 +1,23 @@
+import asyncio
 import json
 import os
+import uuid
 from typing import Optional
 
 import aiohttp
-import asyncio
-import uuid
-
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, status
 from starlette.requests import Request
 
-from movie_together.app.src.core.config import settings
 from movie_together.app.src.core.auth.decorators import login_required
-from movie_together.app.src.core.utils import create_room_link, create_short_link
-from movie_together.app.src.models.models import ResponseModel, WebsocketMessage, MessageAction, User, ResponseUser
-from movie_together.app.src.services.room import RoomService, get_room_service
+from movie_together.app.src.core.config import settings
+from movie_together.app.src.core.utils import (create_room_link,
+                                               create_short_link)
+from movie_together.app.src.models.models import (MessageAction, ResponseModel,
+                                                  ResponseUser, User,
+                                                  WebsocketMessage)
 from movie_together.app.src.services.queue_consumer import KafkaConsumer
 from movie_together.app.src.services.queue_producer import KafkaProducer
+from movie_together.app.src.services.room import RoomService, get_room_service
 
 room_router = APIRouter()
 
@@ -69,9 +71,9 @@ async def join_user(
     error = await service.join(user=request.user, room_id=room_id)
 
     if error:
-        return ResponseUser(success=True, errors=[error])
+        return ResponseUser(success=False, errors=[error])
 
-    return ResponseUser(success=False)
+    return ResponseUser(success=True)
 
 
 async def send_to_websocket(

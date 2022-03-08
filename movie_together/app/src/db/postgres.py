@@ -2,7 +2,6 @@ from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-
 async_pg_engine: Optional[AsyncEngine] = None
 
 

@@ -14,7 +14,6 @@ from movie_together.app.src.core.config import settings
 from movie_together.app.src.core.logger import LOGGING
 from movie_together.app.src.db import postgres
 
-
 logging_config.dictConfig(LOGGING)
 
 api_key = APIKeyHeader(name='authorization', auto_error=False)
