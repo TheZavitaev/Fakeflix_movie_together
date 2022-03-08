@@ -58,6 +58,19 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data/pgdata
 
+  auth:
+    container_name: movie_together_auth
+    build:
+      context: .
+      dockerfile: dockerfiles/auth/Dockerfile
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "10m"
+    entrypoint: ["python", "app.py"]
+
 #  topics_init_python:
 #    container_name: topics_init_python
 #    depends_on:
