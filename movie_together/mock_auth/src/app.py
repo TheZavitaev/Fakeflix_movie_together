@@ -1,3 +1,5 @@
+import http
+
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
@@ -25,13 +27,13 @@ auth_database = {
 def get_me():
     token = request.headers.get("authorization")
     if not token:
-        return jsonify("unauthorized"), 401
+        return jsonify("unauthorized"), http.HTTPStatus.UNAUTHORIZED
 
     user_data = auth_database.get(token)
     if not user_data:
-        return jsonify("unauthorized"), 401
+        return jsonify("unauthorized"), http.HTTPStatus.UNAUTHORIZED
 
-    return jsonify(user_data), 200
+    return jsonify(user_data), http.HTTPStatus.CREATED
 
 
 if __name__ == "__main__":
