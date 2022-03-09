@@ -10,11 +10,11 @@ class Settings(BaseSettings):
     PROJECT_HOST: str = '0.0.0.0'
     PROJECT_PORT: int = 8000
 
-    DB_HOST: str = 'localhost'
-    DB_PORT: int = 5432
-    DB_USERNAME: str = 'postgres'
-    DB_PASSWORD: str = 'postgres'
-    DB_NAME: str = 'movie_together'
+    DB_HOST: str
+    DB_PORT: int
+    DB_USERNAME: str
+    DB_PASSWORD: str
+    DB_NAME: str
 
     KAFKA_HOST: str = os.getenv('KAFKA_HOST', 'kafka')
     KAFKA_PORT: int = 29092
@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     AUTH_SERVICE_GET_ME_ENDPOINT: str = 'me'
     AUTHORIZATION_HEADER_NAME: str = 'authorization'
 
-    JWT_SECRET_KEY: str = 'secret'
+    JWT_SECRET_KEY: str
     JWT_ALG: str = 'HS256'
 
     SENTRY_DSN: str = 'https://41c1ac7b20f641fc81eb6c94898e4e36@o473899.ingest.sentry.io/6091607'
