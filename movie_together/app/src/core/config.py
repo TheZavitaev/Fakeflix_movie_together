@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = 'Movie together API'
     PROJECT_HOST: str = '0.0.0.0'
     PROJECT_PORT: int = 8000
+    PROJECT_PROTOCOL: str = 'http'
 
     DB_HOST: str
     DB_PORT: int
@@ -31,9 +32,9 @@ class Settings(BaseSettings):
     AUTHORIZATION_HEADER_NAME: str = 'authorization'
 
     JWT_SECRET_KEY: str
-    JWT_ALG: str = 'HS256'
+    JWT_ALG: str
 
-    SENTRY_DSN: str = 'https://41c1ac7b20f641fc81eb6c94898e4e36@o473899.ingest.sentry.io/6091607'
+    SENTRY_DSN: str
 
     @property
     def auth_service_url(self):
@@ -51,6 +52,10 @@ class Settings(BaseSettings):
             'enable_auto_commit': self.KAFKA_AUTO_COMMIT,
             'auto_offset_reset': self.KAFKA_AUTO_OFFSET_RESET,
         }
+
+    @property
+    def get_root_url(self):
+        return f'{self.PROJECT_PROTOCOL}://{self.PROJECT_HOST}:{self.PROJECT_PORT}'
 
     class Config:
         env_file = '.env'
