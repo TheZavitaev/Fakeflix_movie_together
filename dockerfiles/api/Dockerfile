@@ -8,6 +8,8 @@ COPY movie_together/app/requirements.txt $ROOT_APP/requirements.txt
 
 WORKDIR $ROOT_APP
 
+EXPOSE 8000
+
 RUN pip install --upgrade pip setuptools wheel
 RUN pip --no-cache-dir install asyncpg
 RUN pip --no-cache-dir install httptools

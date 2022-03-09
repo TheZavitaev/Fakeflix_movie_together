@@ -3,8 +3,10 @@ from logging import config as logging_config
 
 import sentry_sdk
 import uvicorn as uvicorn
+from psycopg2 import OperationalError
+
 from api.routers import api_router
-from core.auth.middleware import CustomAuthBackend
+from core.auth.middleware import CustomAuthBackend, logger
 from core.config import settings
 from core.logger import LOGGING
 from db import postgres
@@ -46,7 +48,10 @@ app.add_middleware(SentryAsgiMiddleware)
 
 @app.on_event('startup')
 async def startup():
-    postgres.async_pg_engine = create_async_engine(settings.pg_dsn, echo=True)
+    try:
+        postgres.async_pg_engine = create_async_engine(settings.pg_dsn, echo=True)
+    except OperationalError as error:
+        logger.error(f'An error occurred while initializing the database - {error}')
 
 
 @app.on_event('shutdown')

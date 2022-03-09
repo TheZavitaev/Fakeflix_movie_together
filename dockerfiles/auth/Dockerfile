@@ -13,3 +13,5 @@ RUN pip install --upgrade pip setuptools wheel
 RUN pip install -r requirements.txt
 
 COPY movie_together/mock_auth/src $ROOT_APP/
+
+ENTRYPOINT ["python", "app.py"]
