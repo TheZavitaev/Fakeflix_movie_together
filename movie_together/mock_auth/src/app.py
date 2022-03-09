@@ -1,4 +1,5 @@
 import http
+import os
 
 from flask import Flask, jsonify, request
 
@@ -6,14 +7,14 @@ app = Flask(__name__)
 
 
 auth_database = {
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4MGMxOWQzYy03ZWQ5LTQ4ODItYWIzMy03ODlmZTQ1OTkxYzQiLCJmaXJzdF9uYW1lIjoiQWxla3NleSIsImxhc3RfbmFtZSI6Ikt1Y2hlcnlhdmVua28iLCJpYXQiOjE1MTYyMzkwMjJ9.xLp_4zECLl-0YpbcPpy-SOi9o7sO64_1G37tJ0ZWw7A": {
+    os.getenv('Kucheryavenko'): {
         "username": "frbgd",
         "first_name": "Aleksey",
         "last_name": "Kucheryavenko",
         "email": "kap17597@yandex.ru",
         "id": "80c19d3c-7ed9-4882-ab33-789fe45991c4",
     },
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YWQzYTE0ZS0yZmZkLTRlM2EtOTAxMy1iOTgxYTIwMmIxNTkiLCJmaXJzdF9uYW1lIjoiT2xlZyIsImxhc3RfbmFtZSI6Ilphdml0YWV2IiwiaWF0IjoxNTE2MjM5MDIyfQ.5G12pR-rel7UHNz7kdNrNcQ_it63pHmKCM7_eeM1zSY": {
+    os.getenv('Zavitaev'): {
         "username": "TheZavitaev",
         "first_name": "Oleg",
         "last_name": "Zavitaev",
