@@ -55,8 +55,8 @@ services:
       options:
         max-file: "10"
         max-size: "10m"
-    volumes:
-      - pg_data:/var/lib/postgresql/data/pgdata
+#    volumes:
+#      - pg_data:/var/lib/postgresql/data/pgdata
 
   auth:
     container_name: movie_together_auth

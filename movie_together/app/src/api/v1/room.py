@@ -38,7 +38,7 @@ async def create_room(
     if error:
         return ResponseModel(success=False, errors=[error])
     link = create_short_link(create_room_link(room_id))
-    return ResponseModel(success=True, link=link)
+    return ResponseModel(success=True, link=create_room_link(room_id))
 
 
 @room_router.post('/{room_id}/disconnect', response_model=ResponseUser)
@@ -99,7 +99,7 @@ async def get_user_data(authorization: str) -> Optional[User]:
                 settings.AUTHORIZATION_HEADER_NAME: authorization,
             },
         )
-        if resp.status != 200:
+        if resp.status != 201:
             return
         raw_user = await resp.json()
         return User(**raw_user)
